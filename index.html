@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIWW SULTAN SYSTEM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#00ff00;
+    font-family:'Share Tech Mono', monospace;
+    overflow:hidden;
+}
+
+/* MATRIX */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:-1;
+}
+
+/* LOGIN */
+.login{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    background:rgba(0,0,0,0.8);
+    padding:25px;
+    border:1px solid #0f0;
+    box-shadow:0 0 20px #0f0;
+}
+
+/* PROFILE */
+.profile{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    border:2px solid #0f0;
+    box-shadow:0 0 20px #0f0,0 0 40px lime;
+    animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+    from{box-shadow:0 0 10px #0f0;}
+    to{box-shadow:0 0 40px lime;}
+}
+
+input{
+    width:100%;
+    margin-top:10px;
+    padding:8px;
+    background:black;
+    border:1px solid #0f0;
+    color:#0f0;
+}
+
+button{
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    background:#0f0;
+    border:none;
+    cursor:pointer;
+}
+
+/* DASHBOARD */
+.dashboard{
+    display:none;
+    height:100vh;
+    color:white;
+    font-family:'Orbitron', sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:200px;
+    height:100%;
+    background:rgba(0,0,0,0.9);
+    border-right:1px solid orange;
+    position:absolute;
+    padding:20px;
+}
+
+.sidebar h2{
+    color:orange;
+}
+
+.sidebar div{
+    margin:15px 0;
+    cursor:pointer;
+}
+
+/* CONTENT */
+.content{
+    margin-left:220px;
+    padding:20px;
+}
+
+/* CARD */
+.card{
+    display:inline-block;
+    padding:20px;
+    margin:10px;
+    background:rgba(0,0,0,0.7);
+    border:1px solid orange;
+    box-shadow:0 0 20px orange;
+}
+
+/* LEDAKAN */
+.explode{
+    position:absolute;
+    width:10px;
+    height:10px;
+    background:red;
+    border-radius:50%;
+    animation:boom .6s linear;
+}
+@keyframes boom{
+    to{transform:scale(10);opacity:0;}
+}
+
+/* ACCESS */
+.access{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:40px;
+    color:lime;
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+    <img src="tegarhr.jpg" class="profile" id="profile">
+    <div id="typing"></div>
+    <input type="text" id="user" placeholder="USERNAME">
+    <input type="password" id="pass" placeholder="PASSWORD">
+    <button onclick="login()">LOGIN</button>
+</div>
+
+<div class="access" id="access">ACCESS GRANTED 🔓</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dash">
+    <div class="sidebar">
+        <h2>MIWW 🔥</h2>
+        <div>Dashboard</div>
+        <div>System</div>
+        <div>Network</div>
+        <div>Settings</div>
+    </div>
+
+    <div class="content">       <h1>CONTROL PANEL</h1>
+
+        <div class="card">💻 CPU: <span id="cpu"></span>%</div>
+        <div class="card">🧠 RAM: <span id="ram"></span>%</div>
+        <div class="card">🌐 NET: ONLINE</div>
+        <div class="card">⚡ POWER: MAX</div>
+    </div>
+</div>
+
+<audio id="sound">
+<source src="https://files.catbox.moe/6nj8xq.mp3">
+</audio>
+
+<script>
+// MATRIX
+let c=document.getElementById("matrix");
+let ctx=c.getContext("2d");
+c.height=innerHeight;
+c.width=innerWidth;
+
+let letters="MIWW123";
+letters=letters.split("");
+let size=14;
+let col=c.width/size;
+let drop=[];
+for(let i=0;i<col;i++) drop[i]=1;
+
+function draw(){
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.fillStyle="#0f0";
+ctx.font=size+"px monospace";
+
+for(let i=0;i<drop.length;i++){
+let text=letters[Math.random()*letters.length|0];
+ctx.fillText(text,i*size,drop[i]*size);
+if(drop[i]*size>c.height && Math.random()>0.975) drop[i]=0;
+drop[i]++;
+}}
+setInterval(draw,33);
+
+// typing
+let t="> MIWW SYSTEM...\n> LOGIN...";
+let i=0;
+(function type(){
+if(i<t.length){
+document.getElementById("typing").innerHTML+=t[i];
+i++; setTimeout(type,40);
+}})();
+
+// parallax
+document.addEventListener("mousemove",e=>{
+let p=document.getElementById("profile");
+p.style.transform=`translate(${e.clientX/60}px,${e.clientY/60}px)`;
+});
+
+// explosion
+document.addEventListener("click",e=>{
+let b=document.createElement("div");
+b.className="explode";
+b.style.left=e.clientX+"px";
+b.style.top=e.clientY+"px";
+document.body.appendChild(b);
+setTimeout(()=>b.remove(),600);
+});
+
+// login
+function login(){
+let u=user.value;
+let p=pass.value;
+sound.play();
+
+if(u && p){
+loginBox.style.display="none";
+access.style.display="block";
+
+setTimeout(()=>{
+access.style.display="none";
+dash.style.display="block";
+},1500);
+
+} else alert("ACCESS DENIED ❌");
+}
+
+// stats
+setInterval(()=>{
+cpu.innerText=Math.floor(Math.random()*100);
+ram.innerText=Math.floor(Math.random()*100);
+},1000);
+</script>
+
+</body>
+</html>
+
